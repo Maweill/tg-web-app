@@ -4,10 +4,11 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   app: {
     head: {
-      script: [
-        { src: "https://telegram.org/js/telegram-web-app.js", defer: true },
-      ],
+      script: [{ src: "https://telegram.org/js/telegram-web-app.js" }],
     },
+    // Правильная настройка базового пути для последних версий Nuxt 3
+    baseURL: "/tg-web-app/", // Замените 'tg-web-app' на имя вашего репозитория
   },
-  ssr: false, // Отключаем серверный рендеринг, так как Telegram mini app работает на клиенте
+  // Эти настройки нужны для статического сайта
+  ssr: false,
 });
