@@ -1,17 +1,22 @@
 <template>
-  <div class="container">
-    <h1>Telegram Mini App</h1>
-    <p>Hi!</p>
-    <p v-if="userInfo">Hello, {{ userInfo.first_name }}!</p>
-    <button @click="sendData">Send Data to Telegram</button>
-    <button @click="closeApp">Close App</button>
-  </div>
+  <TonConnectUIProvider :options="tonConnectOptions">
+    <div class="container">
+      <h1>Telegram Mini App</h1>
+      <p>Hi!</p>
+      <p v-if="userInfo">Hello, {{ userInfo.first_name }}!</p>
+      <TonConnectButton class-name="ton-connect-button" />
+    </div>
+  </TonConnectUIProvider>
 </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
+import { TonConnectUIProvider, TonConnectButton } from "@townsquarelabs/ui-vue";
 
 const userInfo = ref(null);
+const tonConnectOptions = {
+  manifestUrl: `${window.location.origin}/tonconnect-manifest.json`,
+};
 
 onMounted(() => {
   if (window.Telegram && window.Telegram.WebApp) {
@@ -21,21 +26,6 @@ onMounted(() => {
     userInfo.value = webApp.initDataUnsafe.user;
   }
 });
-
-function sendData() {
-  if (window.Telegram && window.Telegram.WebApp) {
-    const webApp = window.Telegram.WebApp;
-    webApp.sendData(JSON.stringify({ message: "Hello from Mini App!" }));
-  } else {
-    console.error("Telegram WebApp is not available");
-  }
-}
-
-function closeApp() {
-  if (window.Telegram && window.Telegram.WebApp) {
-    window.Telegram.WebApp.close();
-  }
-}
 </script>
 
 <style>
@@ -75,5 +65,10 @@ button {
 
 button:active {
   opacity: 0.8;
+}
+
+.ton-connect-button {
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 </style>
