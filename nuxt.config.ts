@@ -6,9 +6,7 @@ export default defineNuxtConfig({
     head: {
       script: [{ src: "https://telegram.org/js/telegram-web-app.js" }],
     },
-    // Правильная настройка базового пути для последних версий Nuxt 3
-    baseURL: "/tg-web-app/", // Замените 'tg-web-app' на имя вашего репозитория
+    baseURL: "/tg-web-app/",
   },
-  // Эти настройки нужны для статического сайта
   ssr: false,
 });
