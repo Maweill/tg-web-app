@@ -2,14 +2,23 @@
   <UContainer class="py-8 flex justify-center">
     <UCard>
       <template #header>
-        <h1 class="text-2xl font-bold">Telegram Mini App</h1>
+        <div class="text-center">
+          <h1 v-if="userInfo" class="text-2xl font-bold mb-4">
+            Hello, {{ userInfo.first_name }}!
+          </h1>
+          <h1 v-else class="text-2xl font-bold mb-4">Welcome, Guest!</h1>
+          <div v-if="userInfo" class="mt-2">
+            <p>Username: {{ userInfo.username || "Not available" }}</p>
+            <p>Language: {{ userInfo.language_code }}</p>
+            <p>Is Premium: {{ userInfo.is_premium ? "Yes" : "No" }}</p>
+          </div>
+        </div>
       </template>
       <div class="flex justify-center">
         <TonConnectButton />
       </div>
       <template #footer>
-        <p v-if="userInfo">Hello, {{ userInfo.first_name }}!</p>
-        <div v-else-if="wallet" class="flex flex-col items-center">
+        <div v-if="wallet" class="flex flex-col items-center">
           <p>Address: {{ tonAddress }}</p>
           <p>Chain: {{ wallet.account.chain }}</p>
           <p>Provider: {{ wallet.provider }}</p>
