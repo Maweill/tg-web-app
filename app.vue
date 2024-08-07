@@ -15,7 +15,7 @@ import { TonConnectUIProvider, TonConnectButton } from "@townsquarelabs/ui-vue";
 
 const userInfo = ref(null);
 const tonConnectOptions = {
-  manifestUrl: `${window.location.origin}/tonconnect-manifest.json`,
+  manifestUrl: "/tonconnect-manifest.json",
 };
 
 onMounted(() => {
