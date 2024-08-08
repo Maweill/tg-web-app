@@ -2,7 +2,7 @@
   <TonConnectUIProvider :options="tonConnectOptions">
     <Suspense>
       <template #default>
-        <AppContent />
+        <CoinTossGame />
       </template>
       <template #fallback>
         <div>Loading...</div>
