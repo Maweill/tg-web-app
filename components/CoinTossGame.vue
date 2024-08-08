@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useTonConnectUI, useTonWallet } from "@townsquarelabs/ui-vue";
+import { useTonConnectUI, TonConnectButton } from "@townsquarelabs/ui-vue";
 import { MyAppExplorerService } from "~/services/MyAppExplorerService";
 
 const connector = useTonConnectUI();
@@ -10,9 +10,7 @@ const transactionFailed = ref(false);
 
 let myAppExplorerService: MyAppExplorerService;
 onMounted(() => {
-  myAppExplorerService = new MyAppExplorerService(
-    "https://testnet.toncenter.com/api/v2/jsonRPC"
-  );
+  myAppExplorerService = new MyAppExplorerService("/api");
 });
 
 async function sendTransaction() {
@@ -48,6 +46,7 @@ async function sendTransaction() {
   <UContainer
     class="flex flex-col items-center justify-center min-h-screen gap-6"
   >
+    <TonConnectButton />
     <CoinSideSelection />
     <UInput
       v-model="amount"
