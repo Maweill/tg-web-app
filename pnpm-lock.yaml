@@ -5,6 +5,12 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@eversdk/core':
+    specifier: ^1.47.0
+    version: 1.47.0
+  '@eversdk/lib-web':
+    specifier: ^1.47.0
+    version: 1.47.0
   '@tonconnect/protocol':
     specifier: ^2.2.6
     version: 2.2.6
@@ -988,6 +994,17 @@ packages:
     requiresBuild: true
     dev: false
     optional: true
+
+  /@eversdk/core@1.47.0:
+    resolution: {integrity: sha512-usLBwmMJbcHzZEXIBQvEo6r/Mmt6XupplGtGEuuKVnsHBcKjTLQ4q393Q9yEl41BmdiT5d2NsdWqdd6O75svOA==}
+    engines: {node: '>=6'}
+    dev: false
+
+  /@eversdk/lib-web@1.47.0:
+    resolution: {integrity: sha512-bUeFz5Qs9KRf5YGjc0sk97ps+tcIDD69TTV+mvLkntlySh2txMP5G37AUGcMBWnN2j0Fkd6DD7hPXi/MCHPbJg==}
+    engines: {node: '>=6'}
+    requiresBuild: true
+    dev: false
 
   /@fastify/busboy@2.1.1:
     resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}

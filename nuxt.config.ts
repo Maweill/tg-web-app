@@ -16,4 +16,20 @@ export default defineNuxtConfig({
 
   ssr: false,
   modules: ["@nuxt/ui"],
+
+  nitro: {
+    publicAssets: [
+      {
+        dir: "./../node_modules/@eversdk/lib-web",
+        maxAge: 60 * 60 * 24 * 365, // кэшировать на год
+      },
+    ],
+    devProxy: {
+      "/api/": {
+        target: "https://testnet.toncenter.com/api/v2/jsonRPC",
+        changeOrigin: true,
+        prependPath: true,
+      },
+    },
+  },
 });

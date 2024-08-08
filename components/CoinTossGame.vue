@@ -1,11 +1,19 @@
 <script setup lang="ts">
-import { useTonConnectUI } from "@townsquarelabs/ui-vue";
+import { useTonConnectUI, useTonWallet } from "@townsquarelabs/ui-vue";
+import { MyAppExplorerService } from "~/services/MyAppExplorerService";
 
 const connector = useTonConnectUI();
 const amount = ref("");
 const result = ref("");
 const sendingBet = ref(false);
 const transactionFailed = ref(false);
+
+let myAppExplorerService: MyAppExplorerService;
+onMounted(() => {
+  myAppExplorerService = new MyAppExplorerService(
+    "https://testnet.toncenter.com/api/v2/jsonRPC"
+  );
+});
 
 async function sendTransaction() {
   const transaction = {
@@ -22,8 +30,8 @@ async function sendTransaction() {
     sendingBet.value = true;
     transactionFailed.value = false;
     const { boc } = await connector[0].sendTransaction(transaction);
-    // const someTxData = await myAppExplorerService.getTransaction(result.boc);
-    console.log("Transaction sent successfully. Boc:", boc);
+    const someTxData = await myAppExplorerService.getTransaction(boc);
+    console.log("Transaction sent successfully. Tx:", someTxData);
 
     const randomOutcome = Math.random() < 0.5;
     result.value = randomOutcome ? "win" : "lose";
