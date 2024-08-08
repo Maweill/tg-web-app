@@ -19,7 +19,7 @@ async function sendTransaction() {
     messages: [
       {
         address:
-          "0:412410771DA82CBA306A55FA9E0D43C9D245E38133CB58F1457DFB8D5CD8892F", // destination address
+          "0:4d240b7c6c52c58f68a0d4d648a0c107996695534c96fbf1c95a9e6552203482", // destination address
         amount: (parseFloat(amount.value) * 1e9).toString(), // converting to nanotons
       },
     ],
