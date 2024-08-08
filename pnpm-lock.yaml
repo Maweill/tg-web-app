@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@tonconnect/protocol':
+    specifier: ^2.2.6
+    version: 2.2.6
   '@townsquarelabs/ui-vue':
     specifier: ^1.0.2
     version: 1.0.2(@vue/compiler-sfc@3.4.36)(typescript@5.5.4)(vite@5.3.5)(vue@3.4.36)

@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@tonconnect/protocol": "^2.2.6",
     "@townsquarelabs/ui-vue": "^1.0.2",
     "nuxt": "^3.12.4",
     "vue": "latest"
