@@ -28,8 +28,8 @@ async function sendTransaction() {
     sendingBet.value = true;
     transactionFailed.value = false;
     const { boc } = await connector[0].sendTransaction(transaction);
-    const someTxData = await myAppExplorerService.getTransaction(boc);
-    console.log("Transaction sent successfully. Tx:", someTxData);
+    // const someTxData = await myAppExplorerService.getTransaction(boc);
+    // console.log("Transaction sent successfully. Tx:", someTxData);
 
     const randomOutcome = Math.random() < 0.5;
     result.value = randomOutcome ? "win" : "lose";
@@ -67,7 +67,7 @@ async function sendTransaction() {
       {{ transactionFailed ? "Transaction Failed" : "Send Transaction" }}
     </UButton>
     <UDivider icon="material-symbols:arrow-downward-rounded" />
-    <p v-if="result == 'win'">You won!</p>
-    <p v-else-if="result == 'lose'">You lost!</p>
+    <p v-if="result == 'win'">🎉 You won! 🏆</p>
+    <p v-else-if="result == 'lose'">😢 You lost! 💔</p>
   </UContainer>
 </template>
