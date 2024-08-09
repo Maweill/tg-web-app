@@ -47,6 +47,15 @@ export class MyAppExplorerService {
     }
   }
 
+  async getTransactionHash(boc: string): Promise<string> {
+    const cell: ParsedMessage = await this.client.boc.parse_message({
+      boc: boc,
+    });
+
+    const hash: string = cell.parsed.id;
+    return hash;
+  }
+
   async getTransaction(boc: string): Promise<Transaction | null> {
     const cell: ParsedMessage = await this.client.boc.parse_message({
       boc: boc,

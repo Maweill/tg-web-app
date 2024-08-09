@@ -12,8 +12,10 @@
   "dependencies": {
     "@eversdk/core": "^1.47.0",
     "@eversdk/lib-web": "^1.47.0",
+    "@fotonjs/core": "^0.0.8",
     "@tonconnect/protocol": "^2.2.6",
     "@townsquarelabs/ui-vue": "^1.0.2",
+    "buffer": "^6.0.3",
     "nuxt": "^3.12.4",
     "vue": "latest"
   },

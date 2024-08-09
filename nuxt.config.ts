@@ -32,4 +32,23 @@ export default defineNuxtConfig({
       },
     },
   },
+
+  vite: {
+    define: {
+      "process.env.NODE_DEBUG": false,
+    },
+    build: {
+      rollupOptions: {
+        external: ["fsevents"],
+      },
+    },
+  },
+
+  plugins: ["~/plugins/buffer.client.ts"],
+
+  runtimeConfig: {
+    public: {
+      tonCenterAuthToken: process.env.NUXT_TON_CENTER_AUTH_TOKEN,
+    },
+  },
 });

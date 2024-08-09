@@ -2,6 +2,8 @@
 import { useTonConnectUI, TonConnectButton } from "@townsquarelabs/ui-vue";
 import { MyAppExplorerService } from "~/services/MyAppExplorerService";
 
+const config = useRuntimeConfig();
+
 const connector = useTonConnectUI();
 const amount = ref("");
 const result = ref("");
@@ -9,11 +11,27 @@ const sendingBet = ref(false);
 const transactionFailed = ref(false);
 
 let myAppExplorerService: MyAppExplorerService;
-onMounted(() => {
+let createPublicClient: any;
+
+onMounted(async () => {
   myAppExplorerService = new MyAppExplorerService("/api");
+  console.log("Buffer is available:", typeof Buffer !== "undefined");
+
+  try {
+    const fotonCore = await import("@fotonjs/core");
+    createPublicClient = fotonCore.createPublicClient;
+  } catch (error) {
+    console.error("Failed to load @fotonjs/core:", error);
+  }
 });
 
 async function sendTransaction() {
+  if (!createPublicClient) {
+    console.error("createPublicClient is not available");
+    transactionFailed.value = true;
+    return;
+  }
+
   const transaction = {
     validUntil: Math.floor(Date.now() / 1000) + 360, // 6 minutes from now
     messages: [
@@ -28,8 +46,17 @@ async function sendTransaction() {
     sendingBet.value = true;
     transactionFailed.value = false;
     const { boc } = await connector[0].sendTransaction(transaction);
-    // const someTxData = await myAppExplorerService.getTransaction(boc);
-    // console.log("Transaction sent successfully. Tx:", someTxData);
+    const txHash = await myAppExplorerService.getTransactionHash(boc);
+    console.log("auth token:", config.public.tonCenterAuthToken);
+
+    const publicClient = createPublicClient({
+      api: "testnet",
+      authToken: config.public.tonCenterAuthToken,
+    });
+    const tx = await publicClient.waitForTransaction({
+      hash: txHash,
+    });
+    console.log("Transaction sent successfully. Tx:", tx);
 
     const randomOutcome = Math.random() < 0.5;
     result.value = randomOutcome ? "win" : "lose";
