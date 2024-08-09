@@ -47,7 +47,6 @@ async function sendTransaction() {
     transactionFailed.value = false;
     const { boc } = await connector[0].sendTransaction(transaction);
     const txHash = await myAppExplorerService.getTransactionHash(boc);
-    console.log("auth token:", config.public.tonCenterAuthToken);
 
     const publicClient = createPublicClient({
       api: "testnet",
