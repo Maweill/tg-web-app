@@ -24,6 +24,22 @@ function nanoTONsToTONs(nanoTONs: bigint): string {
   return (Number(nanoTONs) / 1e9).toFixed(2);
 }
 
+watch(walletAddress, async (newAddress) => {
+  if (newAddress && publicClient) {
+    try {
+      walletBalance.value =
+        (await publicClient.getBalance({
+          address: newAddress,
+        })) ?? 0n;
+    } catch (error) {
+      console.error("Failed to fetch wallet balance:", error);
+      walletBalance.value = 0n;
+    }
+  } else {
+    walletBalance.value = 0n;
+  }
+});
+
 onMounted(async () => {
   myAppExplorerService = new MyAppExplorerService("/api");
   console.log("Buffer is available:", typeof Buffer !== "undefined");
@@ -35,10 +51,6 @@ onMounted(async () => {
       api: "testnet",
       authToken: config.public.tonCenterAuthToken,
     });
-    walletBalance.value =
-      (await publicClient.getBalance({
-        address: walletAddress.value,
-      })) ?? 0n;
   } catch (error) {
     console.error("Failed to load @fotonjs/core:", error);
   }
