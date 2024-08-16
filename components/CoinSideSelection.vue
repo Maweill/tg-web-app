@@ -13,6 +13,7 @@ function toggleCoinSide() {
     "
     :label="heads ? 'Heads' : 'Tails'"
     size="lg"
+    color="yellow"
     @click="toggleCoinSide"
   />
 </template>

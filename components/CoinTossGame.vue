@@ -91,51 +91,130 @@ const balancePercentages = computed(() => {
     hundred: nanoTONsToTONs(walletBalance.value),
   };
 });
+
+const resultClass = computed(() => ({
+  "bg-green-100 text-green-800": result.value === "win",
+  "bg-red-100 text-red-800": result.value === "lose",
+}));
+
+const resultEmoji = computed(() => (result.value === "win" ? "🎉" : "😢"));
+
+const resultText = computed(() =>
+  result.value === "win" ? "You won!" : "You lost!"
+);
 </script>
 
 <template>
   <UContainer
-    class="flex flex-col items-center justify-center min-h-screen gap-6"
+    class="flex flex-col items-center justify-center min-h-screen p-4 md:p-6 gap-6"
   >
-    <TonConnectButton />
-    <CoinSideSelection />
-    <UInput
-      v-model="amount"
-      size="lg"
-      icon="iconoir:coins"
-      placeholder="0.00002"
-    >
-      <template #trailing>
-        <span class="text-gray-500 dark:text-gray-400 text-xs">TON</span>
-      </template>
-    </UInput>
-    <div class="flex flex-wrap justify-center gap-2">
-      <UButton @click="setAmount(0.05)" size="sm"
-        >5%: {{ balancePercentages.five }} TON</UButton
+    <TonConnectButton class="w-full md:w-auto" />
+
+    <div class="w-full max-w-md">
+      <CoinSideSelection class="mb-6 w-full text-center" />
+
+      <UInput
+        v-model="amount"
+        size="xl"
+        icon="iconoir:coins"
+        placeholder="0.00002"
+        class="mb-4"
       >
-      <UButton @click="setAmount(0.25)" size="sm"
-        >25%: {{ balancePercentages.twentyFive }} TON</UButton
+        <template #trailing>
+          <span class="text-gray-500 dark:text-gray-400 text-sm">TON</span>
+        </template>
+      </UInput>
+
+      <div class="grid grid-cols-2 gap-2 mb-6">
+        <UButton
+          @click="setAmount(0.05)"
+          size="lg"
+          color="white"
+          variant="solid"
+          class="w-full flex items-center justify-center"
+        >
+          <span class="text-center">5%: {{ balancePercentages.five }} TON</span>
+        </UButton>
+        <UButton
+          @click="setAmount(0.25)"
+          size="lg"
+          color="white"
+          variant="solid"
+          class="w-full flex items-center justify-center"
+        >
+          <span class="text-center"
+            >25%: {{ balancePercentages.twentyFive }} TON</span
+          >
+        </UButton>
+        <UButton
+          @click="setAmount(0.5)"
+          size="lg"
+          color="white"
+          variant="solid"
+          class="w-full flex items-center justify-center"
+        >
+          <span class="text-center"
+            >50%: {{ balancePercentages.fifty }} TON</span
+          >
+        </UButton>
+        <UButton
+          @click="setAmount(0.75)"
+          size="lg"
+          color="white"
+          variant="solid"
+          class="w-full flex items-center justify-center"
+        >
+          <span class="text-center"
+            >75%: {{ balancePercentages.seventyFive }} TON</span
+          >
+        </UButton>
+        <UButton
+          @click="setAmount(1)"
+          size="lg"
+          color="white"
+          variant="solid"
+          class="w-full col-span-2 flex items-center justify-center"
+        >
+          <span class="text-center"
+            >100%: {{ balancePercentages.hundred }} TON</span
+          >
+        </UButton>
+      </div>
+
+      <UButton
+        :color="transactionFailed ? 'red' : 'black'"
+        :disabled="Number(amount) <= 0"
+        :loading="sendingBet"
+        @click="sendTransaction"
+        size="xl"
+        class="w-full mb-6 flex items-center justify-center"
       >
-      <UButton @click="setAmount(0.5)" size="sm"
-        >50%: {{ balancePercentages.fifty }} TON</UButton
-      >
-      <UButton @click="setAmount(0.75)" size="sm"
-        >75%: {{ balancePercentages.seventyFive }} TON</UButton
-      >
-      <UButton @click="setAmount(1)" size="sm"
-        >100%: {{ balancePercentages.hundred }} TON</UButton
-      >
+        <span class="text-center">
+          {{ transactionFailed ? "Transaction Failed" : "Toss Coin" }}
+        </span>
+      </UButton>
     </div>
-    <UButton
-      :color="transactionFailed ? 'red' : 'primary'"
-      :disabled="Number(amount) <= 0"
-      :loading="sendingBet"
-      @click="sendTransaction"
-    >
-      {{ transactionFailed ? "Transaction Failed" : "Send Transaction" }}
-    </UButton>
-    <UDivider icon="material-symbols:arrow-downward-rounded" />
-    <p v-if="result == 'win'">🎉 You won! 🏆</p>
-    <p v-else-if="result == 'lose'">😢 You lost! 💔</p>
+
+    <transition name="fade">
+      <div
+        v-if="result"
+        class="text-center p-6 rounded-lg shadow-lg"
+        :class="resultClass"
+      >
+        <p class="text-4xl mb-2">{{ resultEmoji }}</p>
+        <p class="text-xl font-bold">{{ resultText }}</p>
+      </div>
+    </transition>
   </UContainer>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
