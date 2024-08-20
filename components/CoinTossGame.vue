@@ -16,6 +16,7 @@ const sendingBet = ref(false);
 const transactionFailed = ref(false);
 const walletAddress = useTonAddress();
 const walletBalance = ref<bigint>(0n);
+const currentNetwork = ref<"mainnet" | "testnet">("testnet");
 
 let myAppExplorerService: MyAppExplorerService;
 let publicClient: PublicClient;
@@ -40,21 +41,55 @@ watch(walletAddress, async (newAddress) => {
   }
 });
 
-onMounted(async () => {
-  myAppExplorerService = new MyAppExplorerService("/api");
-  console.log("Buffer is available:", typeof Buffer !== "undefined");
-
+async function initializePublicClient() {
   try {
     const fotonCore = await import("@fotonjs/core");
 
     publicClient = fotonCore.createPublicClient({
-      api: "testnet",
+      api: currentNetwork.value,
       authToken: config.public.tonCenterAuthToken,
     });
   } catch (error) {
     console.error("Failed to load @fotonjs/core:", error);
   }
+}
+
+onMounted(async () => {
+  myAppExplorerService = new MyAppExplorerService("/api");
+  console.log("Buffer is available:", typeof Buffer !== "undefined");
+
+  await initializePublicClient();
 });
+
+async function toggleNetwork() {
+  if (sendingBet.value) {
+    alert(
+      "Please wait for the current transaction to complete before switching networks."
+    );
+    return;
+  }
+
+  const newNetwork = currentNetwork.value === "mainnet" ? "testnet" : "mainnet";
+
+  const confirmSwitch = confirm(
+    `Are you sure you want to switch to ${newNetwork}? This will disconnect your wallet.`
+  );
+  if (!confirmSwitch) return;
+
+  currentNetwork.value = newNetwork;
+  await initializePublicClient();
+
+  if (connector[0].connected) {
+    await connector[0].disconnect();
+  }
+
+  walletBalance.value = 0n;
+  amount.value = "";
+  result.value = "";
+  walletAddress.value = "";
+
+  console.log(`Switched to ${newNetwork}. Wallet disconnected.`);
+}
 
 async function sendTransaction() {
   const transaction = {
@@ -120,7 +155,19 @@ const resultText = computed(() =>
   <UContainer
     class="flex flex-col items-center justify-center min-h-screen p-4 md:p-6 gap-6"
   >
-    <TonConnectButton class="w-full md:w-auto" />
+    <div class="flex flex-col items-center w-full max-w-md mb-4">
+      <div class="flex justify-between items-center w-full mb-2">
+        <TonConnectButton class="w-full md:w-auto" />
+        <UButton
+          @click="toggleNetwork"
+          size="sm"
+          :color="currentNetwork === 'mainnet' ? 'green' : 'blue'"
+          class="ml-2"
+        >
+          {{ currentNetwork === "mainnet" ? "Mainnet" : "Testnet" }}
+        </UButton>
+      </div>
+    </div>
 
     <div class="w-full max-w-md">
       <CoinSideSelection class="mb-6 w-full text-center" />
