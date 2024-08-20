@@ -17,12 +17,26 @@ const transactionFailed = ref(false);
 const walletAddress = useTonAddress();
 const walletBalance = ref<bigint>(0n);
 const currentNetwork = ref<"mainnet" | "testnet">("testnet");
+const showInfoPanel = ref(false);
+
+const TRANSACTION_ADDRESS =
+  "0:4d240b7c6c52c58f68a0d4d648a0c107996695534c96fbf1c95a9e6552203482";
 
 let myAppExplorerService: MyAppExplorerService;
 let publicClient: PublicClient;
+let tonAddress: any;
 
 function nanoTONsToTONs(nanoTONs: bigint): string {
   return (Number(nanoTONs) / 1e9).toFixed(2);
+}
+
+function toUserFriendlyAddress(address: string): string {
+  try {
+    return tonAddress.parseRaw(address).toString();
+  } catch (error) {
+    console.error("Error converting address:", error);
+    return address;
+  }
 }
 
 watch(walletAddress, async (newAddress) => {
@@ -59,7 +73,14 @@ onMounted(async () => {
   console.log("Buffer is available:", typeof Buffer !== "undefined");
 
   await initializePublicClient();
+
+  const { Address } = await import("ton");
+  tonAddress = Address;
 });
+
+function toggleInfoPanel() {
+  showInfoPanel.value = !showInfoPanel.value;
+}
 
 async function toggleNetwork() {
   if (sendingBet.value) {
@@ -96,8 +117,7 @@ async function sendTransaction() {
     validUntil: Math.floor(Date.now() / 1000) + 360, // 6 minutes from now
     messages: [
       {
-        address:
-          "0:4d240b7c6c52c58f68a0d4d648a0c107996695534c96fbf1c95a9e6552203482",
+        address: TRANSACTION_ADDRESS,
         amount: (parseFloat(amount.value) * 1e9).toString(), // converting to nanotons
       },
     ],
@@ -166,7 +186,26 @@ const resultText = computed(() =>
         >
           {{ currentNetwork === "mainnet" ? "Mainnet" : "Testnet" }}
         </UButton>
+        <UButton @click="toggleInfoPanel" size="sm" color="gray" class="ml-2">
+          {{ showInfoPanel ? "Hide Info" : "Show Info" }}
+        </UButton>
       </div>
+
+      <transition name="fade">
+        <div
+          v-if="showInfoPanel"
+          class="w-full mt-2 p-2 bg-gray-100 rounded-md text-sm"
+        >
+          <p>
+            <strong>Wallet Address:</strong>
+            {{ walletAddress || "Not connected" }}
+          </p>
+          <p>
+            <strong>Destination Address:</strong>
+            {{ toUserFriendlyAddress(TRANSACTION_ADDRESS) }}
+          </p>
+        </div>
+      </transition>
     </div>
 
     <div class="w-full max-w-md">
