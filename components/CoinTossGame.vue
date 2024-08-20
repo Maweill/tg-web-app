@@ -169,6 +169,31 @@ const resultEmoji = computed(() => (result.value === "win" ? "🎉" : "😢"));
 const resultText = computed(() =>
   result.value === "win" ? "You won!" : "You lost!"
 );
+
+const infoItems = computed(() => [
+  {
+    label: "Wallet Address",
+    icon: "i-heroicons-wallet",
+    content: walletAddress.value || "Not connected",
+  },
+  {
+    label: "Destination Address",
+    icon: "i-heroicons-arrow-right-circle",
+    content: toUserFriendlyAddress(TRANSACTION_ADDRESS),
+  },
+  {
+    label: "Network",
+    icon: "i-heroicons-globe-alt",
+    content:
+      currentNetwork.value.charAt(0).toUpperCase() +
+      currentNetwork.value.slice(1),
+  },
+  {
+    label: "Balance",
+    icon: "i-heroicons-currency-dollar",
+    content: `${nanoTONsToTONs(walletBalance.value)} TON`,
+  },
+]);
 </script>
 
 <template>
@@ -177,7 +202,9 @@ const resultText = computed(() =>
   >
     <div class="flex flex-col items-center w-full max-w-md mb-4">
       <div class="flex justify-between items-center w-full mb-2">
-        <TonConnectButton class="w-full md:w-auto" />
+        <UButton @click="toggleInfoPanel" size="sm" color="gray" class="ml-2">
+          {{ showInfoPanel ? "Hide Info" : "Show Info" }}
+        </UButton>
         <UButton
           @click="toggleNetwork"
           size="sm"
@@ -186,25 +213,34 @@ const resultText = computed(() =>
         >
           {{ currentNetwork === "mainnet" ? "Mainnet" : "Testnet" }}
         </UButton>
-        <UButton @click="toggleInfoPanel" size="sm" color="gray" class="ml-2">
-          {{ showInfoPanel ? "Hide Info" : "Show Info" }}
-        </UButton>
+        <TonConnectButton class="w-full md:w-auto" />
       </div>
 
       <transition name="fade">
-        <div
-          v-if="showInfoPanel"
-          class="w-full mt-2 p-2 bg-gray-100 rounded-md text-sm"
-        >
-          <p>
-            <strong>Wallet Address:</strong>
-            {{ walletAddress || "Not connected" }}
-          </p>
-          <p>
-            <strong>Destination Address:</strong>
-            {{ toUserFriendlyAddress(TRANSACTION_ADDRESS) }}
-          </p>
-        </div>
+        <UCard v-if="showInfoPanel" class="w-full mt-2 text-sm">
+          <template #header>
+            <div class="flex items-center">
+              <UIcon name="i-heroicons-information-circle" class="mr-2" />
+              <h3 class="text-base font-semibold">Wallet Information</h3>
+            </div>
+          </template>
+
+          <ul class="space-y-2">
+            <li
+              v-for="item in infoItems"
+              :key="item.label"
+              class="flex items-start"
+            >
+              <UIcon :name="item.icon" class="mr-2 mt-1 flex-shrink-0" />
+              <div>
+                <p class="font-medium">{{ item.label }}</p>
+                <p class="text-xs text-gray-500 break-all">
+                  {{ item.content }}
+                </p>
+              </div>
+            </li>
+          </ul>
+        </UCard>
       </transition>
     </div>
 
@@ -314,5 +350,19 @@ const resultText = computed(() =>
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+@media (max-width: 640px) {
+  .UCard {
+    padding: 0.5rem;
+  }
+
+  ul {
+    padding-left: 0;
+  }
+
+  li {
+    margin-bottom: 0.75rem;
+  }
 }
 </style>
