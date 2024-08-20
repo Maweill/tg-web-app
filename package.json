@@ -17,6 +17,7 @@
     "@townsquarelabs/ui-vue": "^1.0.2",
     "buffer": "^6.0.3",
     "nuxt": "^3.12.4",
+    "ton": "^13.9.0",
     "vue": "latest"
   },
   "devDependencies": {
