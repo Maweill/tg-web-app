@@ -20,7 +20,7 @@ const currentNetwork = ref<"mainnet" | "testnet">("testnet");
 const showInfoPanel = ref(false);
 
 const TRANSACTION_ADDRESS =
-  "0:4d240b7c6c52c58f68a0d4d648a0c107996695534c96fbf1c95a9e6552203482";
+  "0:9374327d69d0704adbe2bfa5c7a15b823aba53b0bf0c77f3ed83794ed54cdf6d";
 
 let myAppExplorerService: MyAppExplorerService;
 let publicClient: PublicClient;
@@ -35,6 +35,15 @@ function toUserFriendlyAddress(address: string): string {
     return tonAddress.parseRaw(address).toString();
   } catch (error) {
     console.error("Error converting address:", error);
+    return address;
+  }
+}
+
+function toRawAddress(address: string): string {
+  try {
+    return tonAddress.parseFriendly(address).address.toRawString();
+  } catch (error) {
+    console.error("Error converting address to raw format:", error);
     return address;
   }
 }
@@ -179,7 +188,9 @@ const infoItems = computed(() => [
   {
     label: "Destination Address",
     icon: "i-heroicons-arrow-right-circle",
-    content: toUserFriendlyAddress(TRANSACTION_ADDRESS),
+    content: `${toUserFriendlyAddress(
+      TRANSACTION_ADDRESS
+    )} (${TRANSACTION_ADDRESS})`,
   },
   {
     label: "Network",
