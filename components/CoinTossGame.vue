@@ -6,6 +6,8 @@ import {
   useTonAddress,
 } from "@townsquarelabs/ui-vue";
 import { MyAppExplorerService } from "~/services/MyAppExplorerService";
+import { TonService } from "~/services/tonService";
+import { TRANSACTION_ADDRESS } from "~/utils/constants";
 
 const config = useRuntimeConfig();
 
@@ -19,34 +21,8 @@ const walletBalance = ref<bigint>(0n);
 const currentNetwork = ref<"mainnet" | "testnet">("testnet");
 const showInfoPanel = ref(false);
 
-const TRANSACTION_ADDRESS =
-  "0:9374327d69d0704adbe2bfa5c7a15b823aba53b0bf0c77f3ed83794ed54cdf6d";
-
 let myAppExplorerService: MyAppExplorerService;
 let publicClient: PublicClient;
-let tonAddress: any;
-
-function nanoTONsToTONs(nanoTONs: bigint): string {
-  return (Number(nanoTONs) / 1e9).toFixed(2);
-}
-
-function toUserFriendlyAddress(address: string): string {
-  try {
-    return tonAddress.parseRaw(address).toString();
-  } catch (error) {
-    console.error("Error converting address:", error);
-    return address;
-  }
-}
-
-function toRawAddress(address: string): string {
-  try {
-    return tonAddress.parseFriendly(address).address.toRawString();
-  } catch (error) {
-    console.error("Error converting address to raw format:", error);
-    return address;
-  }
-}
 
 watch(walletAddress, async (newAddress) => {
   if (newAddress && publicClient) {
@@ -82,9 +58,6 @@ onMounted(async () => {
   console.log("Buffer is available:", typeof Buffer !== "undefined");
 
   await initializePublicClient();
-
-  const { Address } = await import("ton");
-  tonAddress = Address;
 });
 
 function toggleInfoPanel() {
@@ -127,7 +100,7 @@ async function sendTransaction() {
     messages: [
       {
         address: TRANSACTION_ADDRESS,
-        amount: (parseFloat(amount.value) * 1e9).toString(), // converting to nanotons
+        amount: TonService.TONsToNanoTONs(parseFloat(amount.value)).toString(),
       },
     ],
   };
@@ -155,16 +128,16 @@ async function sendTransaction() {
 function setAmount(percentage: number) {
   const amountInNanoTONs =
     (walletBalance.value * BigInt(Math.floor(percentage * 100))) / 100n;
-  amount.value = nanoTONsToTONs(amountInNanoTONs);
+  amount.value = TonService.nanoTONsToTONs(amountInNanoTONs);
 }
 
 const balancePercentages = computed(() => {
   return {
-    five: nanoTONsToTONs((walletBalance.value * 5n) / 100n),
-    twentyFive: nanoTONsToTONs((walletBalance.value * 25n) / 100n),
-    fifty: nanoTONsToTONs((walletBalance.value * 50n) / 100n),
-    seventyFive: nanoTONsToTONs((walletBalance.value * 75n) / 100n),
-    hundred: nanoTONsToTONs(walletBalance.value),
+    five: TonService.nanoTONsToTONs((walletBalance.value * 5n) / 100n),
+    twentyFive: TonService.nanoTONsToTONs((walletBalance.value * 25n) / 100n),
+    fifty: TonService.nanoTONsToTONs((walletBalance.value * 50n) / 100n),
+    seventyFive: TonService.nanoTONsToTONs((walletBalance.value * 75n) / 100n),
+    hundred: TonService.nanoTONsToTONs(walletBalance.value),
   };
 });
 
@@ -178,33 +151,6 @@ const resultEmoji = computed(() => (result.value === "win" ? "🎉" : "😢"));
 const resultText = computed(() =>
   result.value === "win" ? "You won!" : "You lost!"
 );
-
-const infoItems = computed(() => [
-  {
-    label: "Wallet Address",
-    icon: "i-heroicons-wallet",
-    content: walletAddress.value || "Not connected",
-  },
-  {
-    label: "Destination Address",
-    icon: "i-heroicons-arrow-right-circle",
-    content: `${toUserFriendlyAddress(
-      TRANSACTION_ADDRESS
-    )} (${TRANSACTION_ADDRESS})`,
-  },
-  {
-    label: "Network",
-    icon: "i-heroicons-globe-alt",
-    content:
-      currentNetwork.value.charAt(0).toUpperCase() +
-      currentNetwork.value.slice(1),
-  },
-  {
-    label: "Balance",
-    icon: "i-heroicons-currency-dollar",
-    content: `${nanoTONsToTONs(walletBalance.value)} TON`,
-  },
-]);
 </script>
 
 <template>
@@ -228,30 +174,12 @@ const infoItems = computed(() => [
       </div>
 
       <transition name="fade">
-        <UCard v-if="showInfoPanel" class="w-full mt-2 text-sm">
-          <template #header>
-            <div class="flex items-center">
-              <UIcon name="i-heroicons-information-circle" class="mr-2" />
-              <h3 class="text-base font-semibold">Wallet Information</h3>
-            </div>
-          </template>
-
-          <ul class="space-y-2">
-            <li
-              v-for="item in infoItems"
-              :key="item.label"
-              class="flex items-start"
-            >
-              <UIcon :name="item.icon" class="mr-2 mt-1 flex-shrink-0" />
-              <div>
-                <p class="font-medium">{{ item.label }}</p>
-                <p class="text-xs text-gray-500 break-all">
-                  {{ item.content }}
-                </p>
-              </div>
-            </li>
-          </ul>
-        </UCard>
+        <WalletInfoPanel
+          v-if="showInfoPanel"
+          :wallet-address="walletAddress"
+          :current-network="currentNetwork"
+          :wallet-balance="walletBalance"
+        />
       </transition>
     </div>
 
