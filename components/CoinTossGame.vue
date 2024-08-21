@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { TonConnectButton } from "@townsquarelabs/ui-vue";
 import { useWallet } from "~/composables/useWallet";
-import { useCoinToss } from "~/composables/useCoinToss";
 import { MyAppExplorerService } from "~/services/MyAppExplorerService";
+import { CoinTossService } from "~/services/CoinTossService";
+import { useGameStore } from "~/stores/gameStore";
 
 const {
   walletAddress,
@@ -20,20 +21,17 @@ const uiState = reactive({
 const myAppExplorerService = new MyAppExplorerService("/api");
 const publicClient = await initializePublicClient();
 
-const {
-  gameState,
-  placeBet,
-  setAmount,
-  balancePercentages,
-  resultClass,
-  resultEmoji,
-  resultText,
-} = useCoinToss(
-  walletBalance,
-  sendTransaction,
+const coinTossService = new CoinTossService(
   publicClient,
-  myAppExplorerService
+  myAppExplorerService,
+  sendTransaction
 );
+
+const gameStore = useGameStore();
+
+watch(walletBalance, () => {
+  coinTossService.calculateBalancePercentages(walletBalance.value);
+});
 
 function toggleInfoPanel() {
   uiState.showInfoPanel = !uiState.showInfoPanel;
@@ -74,7 +72,7 @@ function toggleInfoPanel() {
       <CoinSideSelection class="mb-6 w-full text-center" />
 
       <UInput
-        v-model="gameState.amount"
+        v-model="gameStore.amount"
         size="xl"
         icon="iconoir:coins"
         placeholder="0.00002"
@@ -87,82 +85,84 @@ function toggleInfoPanel() {
 
       <div class="grid grid-cols-2 gap-2 mb-6">
         <UButton
-          @click="setAmount(0.05)"
-          size="lg"
-          color="white"
-          variant="solid"
-          class="w-full flex items-center justify-center"
-        >
-          <span class="text-center">5%: {{ balancePercentages.five }} TON</span>
-        </UButton>
-        <UButton
-          @click="setAmount(0.25)"
+          @click="gameStore.setAmount(0.05, walletBalance)"
           size="lg"
           color="white"
           variant="solid"
           class="w-full flex items-center justify-center"
         >
           <span class="text-center"
-            >25%: {{ balancePercentages.twentyFive }} TON</span
+            >5%: {{ gameStore.balancePercentages.five }} TON</span
           >
         </UButton>
         <UButton
-          @click="setAmount(0.5)"
+          @click="gameStore.setAmount(0.25, walletBalance)"
           size="lg"
           color="white"
           variant="solid"
           class="w-full flex items-center justify-center"
         >
           <span class="text-center"
-            >50%: {{ balancePercentages.fifty }} TON</span
+            >25%: {{ gameStore.balancePercentages.twentyFive }} TON</span
           >
         </UButton>
         <UButton
-          @click="setAmount(0.75)"
+          @click="gameStore.setAmount(0.5, walletBalance)"
           size="lg"
           color="white"
           variant="solid"
           class="w-full flex items-center justify-center"
         >
           <span class="text-center"
-            >75%: {{ balancePercentages.seventyFive }} TON</span
+            >50%: {{ gameStore.balancePercentages.fifty }} TON</span
           >
         </UButton>
         <UButton
-          @click="setAmount(1)"
+          @click="gameStore.setAmount(0.75, walletBalance)"
+          size="lg"
+          color="white"
+          variant="solid"
+          class="w-full flex items-center justify-center"
+        >
+          <span class="text-center"
+            >75%: {{ gameStore.balancePercentages.seventyFive }} TON</span
+          >
+        </UButton>
+        <UButton
+          @click="gameStore.setAmount(1, walletBalance)"
           size="lg"
           color="white"
           variant="solid"
           class="w-full col-span-2 flex items-center justify-center"
         >
           <span class="text-center"
-            >100%: {{ balancePercentages.hundred }} TON</span
+            >100%: {{ gameStore.balancePercentages.hundred }} TON</span
           >
         </UButton>
       </div>
 
       <UButton
-        :color="gameState.transactionFailed ? 'red' : 'black'"
-        :disabled="Number(gameState.amount) <= 0"
-        :loading="gameState.sendingBet"
-        @click="placeBet"
+        :color="gameStore.transactionFailed ? 'red' : 'black'"
+        :disabled="Number(gameStore.amount) <= 0"
+        :loading="gameStore.sendingBet"
+        @click="coinTossService.placeBet()"
         size="xl"
         class="w-full mb-6 flex items-center justify-center"
       >
         <span class="text-center">
-          {{ gameState.transactionFailed ? "Transaction Failed" : "Toss Coin" }}
+          {{ gameStore.transactionFailed ? "Transaction Failed" : "Toss Coin" }}
         </span>
       </UButton>
     </div>
 
     <transition name="fade">
       <div
-        v-if="gameState.result"
+        v-if="gameStore.result"
         class="text-center p-6 rounded-lg shadow-lg"
-        :class="resultClass"
+        :class="gameStore.resultClass"
       >
-        <p class="text-4xl mb-2">{{ resultEmoji }}</p>
-        <p class="text-xl font-bold">{{ resultText }}</p>
+        <p class="text-4xl mb-2">{{ gameStore.resultEmoji }}</p>
+        <p class="text-xl font-bold">{{ gameStore.resultText }}</p>
       </div>
     </transition>
   </UContainer>

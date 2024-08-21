@@ -1,19 +1,17 @@
 <script setup lang="ts">
-const heads = ref(true);
-
-function toggleCoinSide() {
-  heads.value = !heads.value;
-}
+const gameStore = useGameStore();
 </script>
 
 <template>
   <UButton
     :icon="
-      heads ? 'mingcute:copper-coin-line' : 'mingcute:currency-bitcoin-line'
+      gameStore.selectedSide === 'heads'
+        ? 'mingcute:copper-coin-line'
+        : 'mingcute:currency-bitcoin-line'
     "
-    :label="heads ? 'Heads' : 'Tails'"
+    :label="gameStore.selectedSide === 'heads' ? 'Heads' : 'Tails'"
     size="lg"
     color="yellow"
-    @click="toggleCoinSide"
+    @click="gameStore.toggleCoinSide"
   />
 </template>
