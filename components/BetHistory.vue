@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useBetHistoryStore } from "~/stores/betHistoryStore";
+import { initMiniApp } from "@telegram-apps/sdk";
 
 const betHistoryStore = useBetHistoryStore();
+const [miniApp] = initMiniApp();
 
 const getResultIcon = (result: "win" | "lose") => {
   return result === "win"
@@ -23,6 +25,14 @@ const getTonscanUrl = (
       : "https://testnet.tonscan.org/tx/";
   return `${baseUrl}${transactionHash}`;
 };
+
+const openTonscanLink = (
+  network: "mainnet" | "testnet",
+  transactionHash: string
+) => {
+  const url = getTonscanUrl(network, transactionHash);
+  miniApp.openLink(url);
+};
 </script>
 
 <template>
@@ -33,9 +43,7 @@ const getTonscanUrl = (
         v-for="bet in betHistoryStore.bets"
         :key="bet.id"
         class="w-full cursor-pointer hover:shadow-md transition-shadow"
-        @click="
-          window.open(getTonscanUrl(bet.network, bet.transactionHash), '_blank')
-        "
+        @click="openTonscanLink(bet.network, bet.transactionHash)"
       >
         <div class="flex justify-between items-center">
           <div class="flex flex-col">
