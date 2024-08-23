@@ -5,6 +5,7 @@ import { MyAppExplorerService } from "~/services/MyAppExplorerService";
 import { CoinTossService } from "~/services/CoinTossService";
 import { useGameStore } from "~/stores/gameStore";
 import { initMiniApp } from "@telegram-apps/sdk";
+import { useBetHistoryStore } from "~/stores/betHistoryStore";
 
 const {
   walletAddress,
