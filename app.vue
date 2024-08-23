@@ -1,3 +1,22 @@
+<script setup lang="ts">
+import { TonClient } from "@eversdk/core";
+import { libWeb, libWebSetup } from "@eversdk/lib-web";
+import { TonConnectUIProvider } from "@townsquarelabs/ui-vue";
+import eruda from "eruda";
+import { mockTelegramEnv, parseInitData } from "@telegram-apps/sdk";
+eruda.init();
+
+const tonConnectOptions = {
+  manifestUrl: "https://maweill.github.io/tg-web-app/tonconnect-manifest.json",
+};
+
+libWebSetup({
+  binaryURL: "/tg-web-app/eversdk.wasm",
+});
+
+TonClient.useBinaryLibrary(libWeb as any);
+</script>
+
 <template>
   <TonConnectUIProvider :options="tonConnectOptions">
     <Suspense>
@@ -10,22 +29,6 @@
     </Suspense>
   </TonConnectUIProvider>
 </template>
-
-<script setup lang="ts">
-import { TonClient } from "@eversdk/core";
-import { libWeb, libWebSetup } from "@eversdk/lib-web";
-import { TonConnectUIProvider } from "@townsquarelabs/ui-vue";
-
-const tonConnectOptions = {
-  manifestUrl: "https://maweill.github.io/tg-web-app/tonconnect-manifest.json",
-};
-
-libWebSetup({
-  binaryURL: "/tg-web-app/eversdk.wasm",
-});
-
-TonClient.useBinaryLibrary(libWeb as any);
-</script>
 
 <style>
 body {
