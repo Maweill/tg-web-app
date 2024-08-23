@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { TonService } from "~/services/tonService";
-import { TRANSACTION_ADDRESS } from "~/utils/constants";
 
 const props = defineProps<{
   walletAddress: string;
   currentNetwork: "mainnet" | "testnet";
   walletBalance: bigint;
 }>();
+
+const gameStore = useGameStore();
 
 const infoItems = computed(() => [
   {
@@ -17,9 +18,9 @@ const infoItems = computed(() => [
   {
     label: "Destination Address",
     icon: "i-heroicons-arrow-right-circle",
-    content: `${TonService.toUserFriendlyAddress(
-      TRANSACTION_ADDRESS
-    )} (${TRANSACTION_ADDRESS})`,
+    content: `${TonService.toUserFriendlyAddress(gameStore.selectedAddress)} (${
+      gameStore.selectedAddress
+    })`,
   },
   {
     label: "Network",

@@ -4,6 +4,7 @@ import { useWallet } from "~/composables/useWallet";
 import { MyAppExplorerService } from "~/services/MyAppExplorerService";
 import { CoinTossService } from "~/services/CoinTossService";
 import { useGameStore } from "~/stores/gameStore";
+import { initMiniApp } from "@telegram-apps/sdk";
 
 const {
   walletAddress,
@@ -28,6 +29,7 @@ const coinTossService = new CoinTossService(
 );
 
 const gameStore = useGameStore();
+const [miniApp] = initMiniApp();
 
 watch(walletBalance, () => {
   coinTossService.calculateBalancePercentages(walletBalance.value);
@@ -36,6 +38,41 @@ watch(walletBalance, () => {
 function toggleInfoPanel() {
   uiState.showInfoPanel = !uiState.showInfoPanel;
 }
+
+function sendMessageToBot() {
+  const amount = Number(gameStore.amount).toFixed(2);
+  const message = `cointoss ${amount} TON`;
+
+  try {
+    miniApp.sendData(message);
+  } catch (error) {
+    console.error("Error when sending message:", error);
+  }
+}
+
+const betHistoryStore = useBetHistoryStore();
+
+async function placeBet() {
+  sendMessageToBot();
+  const result = await coinTossService.placeBet();
+
+  if (result) {
+    betHistoryStore.addBet({
+      amount: Number(gameStore.amount),
+      result,
+      timestamp: new Date().toISOString(),
+    });
+  }
+}
+
+onMounted(async () => {
+  miniApp.ready();
+  await betHistoryStore.loadBetsFromCloud();
+});
+
+onBeforeUnmount(async () => {
+  await betHistoryStore.saveBetsToCloud();
+});
 </script>
 
 <template>
@@ -66,6 +103,7 @@ function toggleInfoPanel() {
           :wallet-balance="walletBalance"
         />
       </transition>
+      <AddressManager class="mb-6" />
     </div>
 
     <div class="w-full max-w-md">
@@ -145,7 +183,7 @@ function toggleInfoPanel() {
         :color="gameStore.transactionFailed ? 'red' : 'black'"
         :disabled="Number(gameStore.amount) <= 0"
         :loading="gameStore.sendingBet"
-        @click="coinTossService.placeBet()"
+        @click="placeBet"
         size="xl"
         class="w-full mb-6 flex items-center justify-center"
       >
@@ -166,6 +204,8 @@ function toggleInfoPanel() {
       </div>
     </transition>
   </UContainer>
+
+  <BetHistory />
 </template>
 
 <style scoped>

@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { TonService } from "~/services/tonService";
+import { getAddressesFromStorage } from "~/utils/storage";
 
 export const useGameStore = defineStore("game", {
   state: () => ({
@@ -15,6 +16,11 @@ export const useGameStore = defineStore("game", {
       seventyFive: "0",
       hundred: "0",
     },
+    savedAddresses: {
+      Default: TRANSACTION_ADDRESS,
+      ...getAddressesFromStorage(),
+    },
+    selectedAddress: TRANSACTION_ADDRESS,
   }),
   actions: {
     setAmount(percentage: number, walletBalance: bigint) {
@@ -42,6 +48,19 @@ export const useGameStore = defineStore("game", {
     },
     setBalancePercentages(percentages: typeof this.balancePercentages) {
       this.balancePercentages = percentages;
+    },
+    addAddress(name: string, address: string) {
+      this.savedAddresses[name] = address;
+      saveAddressesToStorage(this.savedAddresses);
+    },
+    removeAddress(name: string) {
+      if (name !== "Default") {
+        delete this.savedAddresses[name];
+        saveAddressesToStorage(this.savedAddresses);
+      }
+    },
+    setSelectedAddress(address: string) {
+      this.selectedAddress = address;
     },
   },
   getters: {

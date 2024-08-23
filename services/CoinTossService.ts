@@ -19,17 +19,22 @@ export class CoinTossService {
     try {
       gameStore.setSendingBet(true);
       gameStore.setTransactionFailed(false);
-      const boc = await this.sendTransaction(
-        gameStore.amount,
-        TRANSACTION_ADDRESS
-      );
+
+      if (!gameStore.selectedAddress) {
+        throw new Error("No address selected");
+      }
+
+      const rawAddress = TonService.toRawAddress(gameStore.selectedAddress);
+      const boc = await this.sendTransaction(gameStore.amount, rawAddress);
       const txHash = await this.myAppExplorerService.getTransactionHash(boc);
 
       await this.publicClient.waitForTransaction({ hash: txHash });
       console.log("Transaction sent successfully. Tx hash:", txHash);
 
       const randomOutcome = Math.random() < 0.5;
-      gameStore.setResult(randomOutcome ? "win" : "lose");
+      const result = randomOutcome ? "win" : "lose";
+      gameStore.setResult(result);
+      return result;
     } catch (error) {
       gameStore.setTransactionFailed(true);
       console.error("Error sending transaction:", error);
