@@ -62,6 +62,7 @@ async function placeBet() {
       result,
       timestamp: new Date().toISOString(),
     });
+    await betHistoryStore.saveBetsToCloud();
   }
 }
 
