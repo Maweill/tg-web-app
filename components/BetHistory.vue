@@ -31,7 +31,7 @@ const openTonscanLink = (
   transactionHash: string
 ) => {
   const url = getTonscanUrl(network, transactionHash);
-  utils.openLink(url, { tryInstantView: true });
+  utils.openLink(url);
 };
 </script>
 

@@ -7,7 +7,7 @@ export function useWallet() {
   const connector = useTonConnectUI();
   const walletAddress = useTonAddress();
   const walletBalance = ref<bigint>(0n);
-  const currentNetwork = ref<"mainnet" | "testnet">("testnet");
+  const currentNetwork = ref<"mainnet" | "testnet">("mainnet");
   let publicClient: PublicClient;
 
   watch(walletAddress, async (newAddress) => {
