@@ -32,9 +32,9 @@ export class CoinTossService {
       console.log("Transaction sent successfully. Tx hash:", txHash);
 
       const randomOutcome = Math.random() < 0.5;
-      const result = randomOutcome ? "win" : "lose";
+      const result: "win" | "lose" = randomOutcome ? "win" : "lose";
       gameStore.setResult(result);
-      return result;
+      return { result, txHash };
     } catch (error) {
       gameStore.setTransactionFailed(true);
       console.error("Error sending transaction:", error);

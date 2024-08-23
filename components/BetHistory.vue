@@ -12,13 +12,31 @@ const getResultIcon = (result: "win" | "lose") => {
 const getResultColor = (result: "win" | "lose") => {
   return result === "win" ? "text-green-600" : "text-red-600";
 };
+
+const getTonscanUrl = (
+  network: "mainnet" | "testnet",
+  transactionHash: string
+) => {
+  const baseUrl =
+    network === "mainnet"
+      ? "https://tonscan.org/tx/"
+      : "https://testnet.tonscan.org/tx/";
+  return `${baseUrl}${transactionHash}`;
+};
 </script>
 
 <template>
   <UContainer class="px-4 py-6 max-w-md mx-auto">
     <h2 class="text-xl font-bold mb-4">Bet History</h2>
     <div class="space-y-3">
-      <UCard v-for="bet in betHistoryStore.bets" :key="bet.id" class="w-full">
+      <UCard
+        v-for="bet in betHistoryStore.bets"
+        :key="bet.id"
+        class="w-full cursor-pointer hover:shadow-md transition-shadow"
+        @click="
+          window.open(getTonscanUrl(bet.network, bet.transactionHash), '_blank')
+        "
+      >
         <div class="flex justify-between items-center">
           <div class="flex flex-col">
             <span class="text-sm text-gray-600">{{
@@ -27,6 +45,7 @@ const getResultColor = (result: "win" | "lose") => {
             <span class="font-medium" :class="getResultColor(bet.result)">
               {{ bet.result === "win" ? "+" : "-" }}{{ bet.amount }} TON
             </span>
+            <span class="text-xs text-gray-500">{{ bet.network }}</span>
           </div>
           <UIcon
             :name="getResultIcon(bet.result)"

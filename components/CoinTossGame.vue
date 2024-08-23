@@ -5,7 +5,6 @@ import { MyAppExplorerService } from "~/services/MyAppExplorerService";
 import { CoinTossService } from "~/services/CoinTossService";
 import { useGameStore } from "~/stores/gameStore";
 import { initMiniApp } from "@telegram-apps/sdk";
-import { useBetHistoryStore } from "~/stores/betHistoryStore";
 
 const {
   walletAddress,
@@ -60,8 +59,10 @@ async function placeBet() {
   if (result) {
     betHistoryStore.addBet({
       amount: Number(gameStore.amount),
-      result,
+      result: result.result,
       timestamp: new Date().toISOString(),
+      network: currentNetwork.value,
+      transactionHash: result.txHash,
     });
     await betHistoryStore.saveBetsToCloud();
   }

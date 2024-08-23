@@ -5,6 +5,8 @@ export interface Bet {
   amount: number;
   result: "win" | "lose";
   timestamp: string;
+  network: "mainnet" | "testnet";
+  transactionHash: string;
 }
 
 export const useBetHistoryStore = defineStore("betHistory", () => {
