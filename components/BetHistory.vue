@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useBetHistoryStore } from "~/stores/betHistoryStore";
-import { initMiniApp } from "@telegram-apps/sdk";
+import { initUtils } from "@telegram-apps/sdk";
 
 const betHistoryStore = useBetHistoryStore();
-const [miniApp] = initMiniApp();
+const utils = initUtils();
 
 const getResultIcon = (result: "win" | "lose") => {
   return result === "win"
@@ -31,7 +31,7 @@ const openTonscanLink = (
   transactionHash: string
 ) => {
   const url = getTonscanUrl(network, transactionHash);
-  miniApp.openLink(url);
+  utils.openLink(url, { tryInstantView: true });
 };
 </script>
 
