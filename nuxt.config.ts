@@ -13,7 +13,15 @@ export default defineNuxtConfig({
     baseURL: "/tg-web-app/",
   },
   ssr: false,
-  modules: ["@nuxt/ui", "@pinia/nuxt"],
+  modules: ["@nuxt/ui", "@pinia/nuxt", "@sentry/nuxt/module"],
+  sentry: {
+    debug: true,
+    sourceMapsUploadOptions: {
+      org: process.env.ORG_SLUG,
+      project: process.env.PROJECT_SLUG,
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+    },
+  },
   nitro: {
     publicAssets: [
       {
