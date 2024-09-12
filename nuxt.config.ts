@@ -1,7 +1,6 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
-
   app: {
     head: {
       script: [
@@ -13,15 +12,13 @@ export default defineNuxtConfig({
     },
     baseURL: "/tg-web-app/",
   },
-
   ssr: false,
   modules: ["@nuxt/ui", "@pinia/nuxt"],
-
   nitro: {
     publicAssets: [
       {
         dir: "./../node_modules/@eversdk/lib-web",
-        maxAge: 60 * 60 * 24 * 365, // кэшировать на год
+        maxAge: 60 * 60 * 24 * 365, // cache for a year
       },
     ],
     devProxy: {
@@ -31,8 +28,8 @@ export default defineNuxtConfig({
         prependPath: true,
       },
     },
+    static: true,
   },
-
   vite: {
     define: {
       "process.env.NODE_DEBUG": false,
@@ -43,9 +40,7 @@ export default defineNuxtConfig({
       },
     },
   },
-
   plugins: ["~/plugins/buffer.client.ts"],
-
   runtimeConfig: {
     public: {
       tonCenterAuthToken: process.env.NUXT_TON_CENTER_AUTH_TOKEN,
