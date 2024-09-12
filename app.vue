@@ -11,6 +11,9 @@ const tonConnectOptions = {
     "https://betswirl-tg.vercel.app/tg-web-app/tonconnect-manifest.json",
 };
 
+setTimeout(() => {
+  throw new Error("Sentry Test Error");
+});
 libWebSetup({
   binaryURL: "/tg-web-app/eversdk.wasm",
 });
