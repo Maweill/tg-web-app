@@ -28,7 +28,6 @@ export default defineNuxtConfig({
         prependPath: true,
       },
     },
-    static: true,
   },
   vite: {
     define: {
