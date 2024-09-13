@@ -5,6 +5,7 @@ import { MyAppExplorerService } from "~/services/MyAppExplorerService";
 import { CoinTossService } from "~/services/CoinTossService";
 import { useGameStore } from "~/stores/gameStore";
 import { initMiniApp } from "@telegram-apps/sdk";
+import * as Sentry from "@sentry/nuxt";
 
 const {
   walletAddress,
@@ -38,22 +39,9 @@ watch(walletBalance, () => {
 function toggleInfoPanel() {
   uiState.showInfoPanel = !uiState.showInfoPanel;
 }
-
-function sendMessageToBot() {
-  const amount = Number(gameStore.amount).toFixed(2);
-  const message = `cointoss ${amount} TON`;
-
-  try {
-    miniApp.sendData(message);
-  } catch (error) {
-    console.error("Error when sending message:", error);
-  }
-}
-
 const betHistoryStore = useBetHistoryStore();
 
 async function placeBet() {
-  sendMessageToBot();
   const bet = await coinTossService.placeBet();
 
   if (bet) {
@@ -71,7 +59,8 @@ async function placeBet() {
 onMounted(async () => {
   miniApp.ready();
   await betHistoryStore.loadBetsFromCloud();
-  throw new Error("Sentry Test Error");
+
+  Sentry.captureMessage("Test message");
 });
 </script>
 
