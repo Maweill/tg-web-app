@@ -52,6 +52,7 @@ export default defineNuxtConfig({
     public: {
       tonCenterAuthToken: process.env.NUXT_TON_CENTER_AUTH_TOKEN,
       sentryDsn: process.env.SENTRY_DSN,
+      browserViewEnabled: process.env.BROWSER_VIEW_ENABLED,
     },
   },
 });
