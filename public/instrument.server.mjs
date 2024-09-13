@@ -1,8 +1,9 @@
 import * as Sentry from "@sentry/nuxt";
 
 // Only run `init` when process.env.SENTRY_DSN is available.
-if (process.env.SENTRY_DSN) {
+if (useRuntimeConfig().public.sentryDsn) {
   Sentry.init({
-    dsn: process.env.SENTRY_DSN,
+    dsn: useRuntimeConfig().public.sentryDsn,
   });
 }
+

@@ -51,6 +51,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       tonCenterAuthToken: process.env.NUXT_TON_CENTER_AUTH_TOKEN,
+      sentryDsn: process.env.SENTRY_DSN,
     },
   },
 });
