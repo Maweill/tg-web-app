@@ -71,6 +71,9 @@ async function placeBet() {
 onMounted(async () => {
   miniApp.ready();
   await betHistoryStore.loadBetsFromCloud();
+  setTimeout(() => {
+    throw new Error("Sentry Test Error");
+  });
 });
 </script>
 
