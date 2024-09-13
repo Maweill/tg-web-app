@@ -4,8 +4,8 @@ import { libWeb, libWebSetup } from "@eversdk/lib-web";
 import { TonConnectUIProvider } from "@townsquarelabs/ui-vue";
 import eruda from "eruda";
 import { mockTelegramEnv, parseInitData } from "@telegram-apps/sdk";
-eruda.init();
 
+// eruda.init();
 const tonConnectOptions = {
   manifestUrl:
     "https://betswirl-tg.vercel.app/tg-web-app/tonconnect-manifest.json",
